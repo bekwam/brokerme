@@ -91,21 +91,52 @@ class MainView : View("Broker Me") {
 
         treeview<Triple<String, String, Any?>> {
 
-            root = TreeItem(Triple("root", "root", null))
+            root = TreeItem(Triple("root", serverList.fileName, null))
             root.isExpanded = true
 
             cellFormat {
 
-                if( it == root.value )
-                    text = "Servers"
-                else if( it.third!! is BRMServer )
+                if( contextMenu != null ) contextMenu.items.clear()
+
+                if( it == root.value ) {
+                    text = "Servers - ${it.second}"
+                    contextmenu {
+                        item("Add Server")
+                    }
+                } else if( it.third!! is BRMServer ) {
                     text = "${it.first} (${it.second})"
-                else if( it.third!! is BRMQueue )
+                    contextmenu {
+                        item("Rename")
+                        item("Delete")
+                    }
+                } else if( it.third!! is BRMQueue ) {
                     text = "${it.first} QUEUE"
-                else if( it.third!! is BRMTopic )
+                    contextmenu {
+                        item("Browse")
+                        item("Rename")
+                        item("Delete")
+                    }
+                } else if( it.third!! is BRMTopic ) {
                     text = "${it.first} TOPIC"
-                else
+                    contextmenu {
+                        item("Subscribe")
+                        item("Rename")
+                        item("Delete")
+                    }
+                } else {
+
                     text = it.first
+
+                    if( it.first == "Queues" ) {
+                        contextmenu {
+                            item("Add Queue")
+                        }
+                    } else if( it.first == "Topics" ) {
+                        contextmenu {
+                            item("Add Topic")
+                        }
+                    }
+                }
 
             }
 
@@ -121,21 +152,23 @@ class MainView : View("Broker Me") {
 
                     } else {
 
-                        if (parent.value.third!! is BRMServer) {
+                        when( parent.value.third!! ) {
 
-                            listOf(
+                            is BRMServer ->
+
+                                listOf(
                                     Triple("Queues", "", (parent.value.third!! as BRMServer).queues),
                                     Triple("Topics", "", (parent.value.third!! as BRMServer).topics)
-                            )
+                                )
 
-                        } else if (parent.value.third!! is List<*>) {  // for queues and topics
+                            is List<*> ->
 
-                            (parent.value.third!! as List<BRMEndpoint>).map { Triple(it.name, "", it) }
+                                @Suppress("UNCHECKED_CAST")
+                                (parent.value.third!! as List<BRMEndpoint>).map { Triple(it.name, "", it) }
 
-                        } else {
+                            else ->
 
-                            null
-
+                                null
                         }
                     }
             }
