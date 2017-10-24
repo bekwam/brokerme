@@ -24,6 +24,11 @@
             <artifactId>tornadofx</artifactId>
             <version>${tornadofx.version}</version>
         </dependency>
+        <dependency>
+            <groupId>com.beust</groupId>
+            <artifactId>klaxon</artifactId>
+            <version>0.30</version>
+        </dependency>
     </dependencies>
 
     <properties>
@@ -67,5 +72,12 @@
             </plugin>
         </plugins>
     </build>
+
+    <repositories>
+        <repository>
+            <id>jcenter</id>
+            <url>https://jcenter.bintray.com/</url>
+        </repository>
+    </repositories>
 
 </project>

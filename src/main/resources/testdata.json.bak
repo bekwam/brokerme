@@ -1,0 +1,36 @@
+[
+  {"name": "localhost",
+    "url": "tcp://localhost:61616",
+    "queues": [
+      {"name": "queue1"},
+      {"name": "queue2"},
+      {"name": "queue3"}
+    ],
+    "topics": [
+      {"name": "topic1"},
+      {"name": "SystemAlerts"},
+      {"name": "Notifications"}
+    ]},
+
+  {"name": "www.bekwam.com",
+    "url": "tcp://www.bekwam.com:61616",
+    "queues": [
+      {"name": "Inbound"},
+      {"name": "Outbound"},
+      {"name": "ExpiryQueue"},
+      {"name": "DLQ"}
+    ],
+    "topics": [
+      {"name": "MyTopic"}
+    ]},
+
+  {"name": "www.bekwam.net",
+    "url": "tcp://www.bekwam.net:61616",
+    "queues": [
+      {"name": "queueA"},
+      {"name": "queueB"}
+    ],
+    "topics": [
+      {"name": "TopicA"}
+    ]}
+]

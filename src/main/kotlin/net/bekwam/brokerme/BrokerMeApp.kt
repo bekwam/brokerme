@@ -1,9 +1,17 @@
 package net.bekwam.brokerme
 
+import com.beust.klaxon.JsonArray
+import com.beust.klaxon.JsonObject
+import com.beust.klaxon.Parser
+import javafx.application.Platform
 import javafx.scene.Scene
+import javafx.scene.control.Label
+import javafx.scene.control.ProgressBar
 import javafx.scene.control.TreeItem
 import javafx.scene.layout.Priority
+import javafx.stage.FileChooser
 import tornadofx.*
+import java.io.File
 
 /**
  * TreeView-based UI
@@ -24,7 +32,7 @@ import tornadofx.*
 // model classes
 class BRMServerList(var fileName : String, var servers : List<BRMServer> = emptyList())
 
-class BRMServer(
+class BRMServer (
         var name : String,
         var url : String,
         var queues : List<BRMQueue> = emptyList(),
@@ -87,8 +95,52 @@ class MainView : View("Broker Me") {
 
     private val serverList = BRMServerList("myservers.json", servers)
 
+    var statusLabel : Label by singleAssign()
+    var statusPB : ProgressBar by singleAssign()
+
+    private fun load(f : File) {
+
+        statusLabel.text = "Loading file"
+        runAsync {
+
+            updateProgress(4.0, 1.0 )
+
+            val parser = Parser()
+            val array = parser.parse(f.absolutePath) as JsonArray<JsonObject>
+
+            updateProgress(1.0, 1.0)
+
+        } ui {
+
+            statusLabel.text = "File loaded"
+        }
+    }
+
     override val root = vbox {
 
+        menubar {
+            menu("File") {
+                item("Open") {
+                    setOnAction {
+                        val filters = arrayOf(
+                                FileChooser.ExtensionFilter("Broker Me Files", "*.json")
+                        )
+                        val f = chooseFile("File", filters)
+                        if( f.isNotEmpty() ) {
+                            load(f[0])
+                        }
+                    }
+                }
+                item("Save")
+                item("Save As")
+                separator()
+                item("Exit") {
+                    setOnAction {
+                        Platform.exit()
+                    }
+                }
+            }
+        }
         treeview<Triple<String, String, Any?>> {
 
             root = TreeItem(Triple("root", serverList.fileName, null))
@@ -174,6 +226,11 @@ class MainView : View("Broker Me") {
             }
 
             vgrow = Priority.ALWAYS
+        }
+
+        hbox {
+            statusLabel = label("")
+            statusPB = progressbar()
         }
     }
 }
